@@ -8,7 +8,6 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-  PLATFORM: linux/amd64,linux/arm64
 
 jobs:
   publish-image:
@@ -35,4 +34,4 @@ jobs:
         run: |
           docker buildx create --name=qemu
           docker buildx use qemu
-          docker buildx build --pull --platform=$(env.PLATFORM) --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} --push .
+          docker buildx build --pull --platform="linux/amd64,linux/arm64" --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} --push .
