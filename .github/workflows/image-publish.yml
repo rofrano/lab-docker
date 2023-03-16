@@ -13,11 +13,14 @@ env:
 jobs:
   publish-image:
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
@@ -25,7 +28,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build the hello-docker Docker image
+      - name: Build the Docker image
         run: |
           docker build . --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
