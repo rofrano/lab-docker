@@ -5,10 +5,10 @@ on:
     types: [published]
 
 env:
-  # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
+  PLATFORM: "linux/amd64,linux/arm64"
 
 jobs:
   publish-image:
@@ -28,7 +28,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Docker Setup QEMU
+        uses: docker/setup-qemu-action@v2.1.0
+          
       - name: Build the Docker image
         run: |
-          docker build . --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          docker buildx create --name=qemu
+          docker buildx use qemu
+          docker buildx build --pull --platform=$(env.PLATFORM) --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} --push .
